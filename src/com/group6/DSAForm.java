@@ -123,7 +123,7 @@ public class DSAForm extends JFrame {
     private JTextField prisonCloseHourField;
     private JButton prisonAddButton;
     private JButton prisonUpdateButton;
-    private JList list1;
+    private JList prisonListList;
     private JLabel prisonDetailsLabel;
     private JLabel prisonsLabel;
     private JLabel prisonPhoneNumberLabel;

@@ -1120,7 +1120,7 @@
                         <properties/>
                         <border type="none"/>
                         <children>
-                          <component id="c8670" class="javax.swing.JList" binding="list1" default-binding="true">
+                          <component id="c8670" class="javax.swing.JList" binding="prisonListList">
                             <constraints/>
                             <properties/>
                           </component>
