@@ -17,9 +17,9 @@ public class DSAForm extends JFrame {
     private JButton loginButton;
     private JPanel loginPanel;
     private JTabbedPane officerTabbedPane;
-    private JPanel evidencePanel;
+    private JPanel sideArmPanel;
     private JPanel dogsPanel;
-    private JPanel peoplePanel;
+    private JPanel peopleDetailsPanel;
     private JTextField peopleNameField;
     private JLabel peopleNameLabel;
     private JLabel peopleBirthDateLabel;
@@ -41,6 +41,33 @@ public class DSAForm extends JFrame {
     private JList peopleSearchList;
     private JLabel usernameLabel;
     private JLabel passwordLabel;
+    private JScrollPane peopleSearchScrollPane;
+    private JTabbedPane peopleTabbedPane;
+    private JPanel peoplePanel;
+    private JPanel peopleCurrentInfo;
+    private JLabel peopleCurrentLabel;
+    private JPanel offencePanel;
+    private JLabel offenceDetailsLabel;
+    private JLabel offenceListLabel;
+    private JList offenceListList;
+    private JTextField offenceDateField;
+    private JTextField offencePostcodeField;
+    private JLabel offenceDateLabel;
+    private JLabel offencePostcodeLabel;
+    private JLabel offenceDescriptionLabel;
+    private JTextArea offenceDescriptionArea;
+    private JButton offenceAddButton;
+    private JPanel arrestsPanel;
+    private JLabel arrestDetailsLabel;
+    private JLabel arrestsLabel;
+    private JList arrestsList;
+    private JLabel arrestDateLabel;
+    private JLabel arrestPostcodeLabel;
+    private JLabel arrestEvidenceLabel;
+    private JTextField arrestDateField;
+    private JTextField arrestPostcodeField;
+    private JTextArea arrestEvidenceArea;
+    private JButton arrestAddButton;
 
     public DSAForm() {
         super();
@@ -50,6 +77,7 @@ public class DSAForm extends JFrame {
 
         setTitle("Police Database System");
         setVisible(true);
+        setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         // Add event handlers
