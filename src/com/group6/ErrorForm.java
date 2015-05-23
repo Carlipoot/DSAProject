@@ -6,11 +6,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class ErrorForm extends JFrame {
-    private JPanel mainPanel;
-    private JPanel errorPanel;
-    private JLabel errorLabel;
-    private JButton okButton;
-    private JTextArea errorMessageArea;
 
     private ErrorForm instance;
 
@@ -35,5 +30,11 @@ public class ErrorForm extends JFrame {
             }
         });
     }
+    
+    private JPanel mainPanel;
+    private JPanel errorPanel;
+    private JLabel errorLabel;
+    private JButton okButton;
+    private JTextArea errorMessageArea;
 
 }

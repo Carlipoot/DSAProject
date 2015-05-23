@@ -5,6 +5,27 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class DSAForm extends JFrame {
+
+    public DSAForm() {
+        super();
+
+        setContentPane(mainPanel);
+        pack();
+
+        setTitle("Police Database System");
+        setVisible(true);
+        setResizable(false);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        // Add event handlers
+        loginButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ErrorForm error = new ErrorForm("There is no sql connection yet dummy!");
+            }
+        });
+    }
+
     private JTabbedPane tabbedPane;
     private JPanel mainPanel;
     private JPanel officerPanel;
@@ -68,25 +89,5 @@ public class DSAForm extends JFrame {
     private JTextField arrestPostcodeField;
     private JTextArea arrestEvidenceArea;
     private JButton arrestAddButton;
-
-    public DSAForm() {
-        super();
-
-        setContentPane(mainPanel);
-        pack();
-
-        setTitle("Police Database System");
-        setVisible(true);
-        setResizable(false);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        // Add event handlers
-        loginButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                ErrorForm error = new ErrorForm("There is no sql connection yet dummy!");
-            }
-        });
-    }
 
 }
