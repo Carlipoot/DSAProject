@@ -30,7 +30,7 @@ public class ErrorForm extends JFrame {
             }
         });
     }
-    
+
     private JPanel mainPanel;
     private JPanel errorPanel;
     private JLabel errorLabel;
