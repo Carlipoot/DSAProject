@@ -1,6 +1,9 @@
 package com.group6.manager;
 
+import com.group6.entities.IEntity;
+
 import java.sql.*;
+import java.util.ArrayList;
 
 public class ConnectionManager {
 
@@ -11,13 +14,14 @@ public class ConnectionManager {
     static final String DB_URL = "jdbc:oracle:thin:@dwarf.cit.griffith.edu.au:1526:DBS";
 
     // Login details
-    static final String USER = "s2794576";
-    static final String PASS = "asdf";
+    static final String USER = "s2841114"; //= "s2794576"; //= "s2841114";
+    static final String PASS = "nether"; //= "asdf"; // = "nether";
 
-    public static ResultSet send(String query) {
+    public static IEntity get(Class<? extends IEntity> clazz) {
         Connection connection = null;
         Statement statement = null;
-        ResultSet results = null;
+        ResultSet resultSet = null;
+        IEntity entity = null;
 
         try{
             Class.forName(JDBC_DRIVER);
@@ -25,7 +29,15 @@ public class ConnectionManager {
             connection = DriverManager.getConnection(DB_URL, USER, PASS);
             statement = connection.createStatement();
 
-            results = statement.executeQuery(query);
+            entity = clazz.newInstance();
+
+            if ( entity.select() != null )
+                resultSet = statement.executeQuery(entity.select());
+
+            if ( resultSet != null && resultSet.next() ) {
+                entity.set(resultSet);
+                resultSet.close();
+            }
 
             statement.close();
             connection.close();
@@ -49,8 +61,118 @@ public class ConnectionManager {
             }
         }
 
-        return results;
+        return entity;
     }
+
+    public static ArrayList<IEntity> getAll(Class<? extends IEntity> clazz) {
+        Connection connection = null;
+        Statement statement = null;
+        ResultSet resultSet = null;
+        ArrayList<IEntity> entities = new ArrayList<IEntity>();
+
+        try{
+            Class.forName(JDBC_DRIVER);
+
+            connection = DriverManager.getConnection(DB_URL, USER, PASS);
+            statement = connection.createStatement();
+
+            if ( clazz.newInstance().selectAll() != null )
+                resultSet = statement.executeQuery(clazz.newInstance().selectAll());
+
+            if ( resultSet != null ) {
+                while ( resultSet.next() ) {
+                    IEntity entity = clazz.newInstance();
+                    entity.set(resultSet);
+                    entities.add(entity);
+                }
+
+                resultSet.close();
+            }
+
+            statement.close();
+            connection.close();
+        } catch(SQLException se) {
+            se.printStackTrace();
+        } catch(Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if ( statement != null )
+                    statement.close();
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+
+            try {
+                if ( connection != null )
+                    connection.close();
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+
+        return entities;
+    }
+
+    public static String send(String query) {
+        Connection connection = null;
+        Statement statement = null;
+        ResultSet resultSet = null;
+        StringBuffer returnString = new StringBuffer("");
+
+        try{
+            Class.forName(JDBC_DRIVER);
+
+            connection = DriverManager.getConnection(DB_URL, USER, PASS);
+            statement = connection.createStatement();
+            resultSet = statement.executeQuery(query);
+
+            ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
+            int cols = resultSetMetaData.getColumnCount();
+
+            for ( int rows = 0; resultSet.next(); rows++ ){
+                if ( rows > 1 )
+                    returnString.append("\n");
+
+                for (int col = 1; col <= cols; col++ ) {
+                    if ( col > 1 )
+                        returnString.append("\t");
+
+                    returnString.append(resultSet.getString(col));
+                }
+
+                //System.out.println(returnString);
+            }
+
+            resultSet.close();
+            statement.close();
+            connection.close();
+        } catch(SQLException se) {
+            se.printStackTrace();
+        } catch(Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if ( statement != null )
+                    statement.close();
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+
+            try {
+                if ( connection != null )
+                    connection.close();
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+
+        return returnString.toString();
+    }
+
+
+
+
 
 
     public static void test() {
