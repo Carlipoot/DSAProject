@@ -1,9 +1,6 @@
 package com.group6;
 
-import com.group6.entities.Arrest;
-import com.group6.entities.IEntity;
-import com.group6.entities.Offence;
-import com.group6.entities.Person;
+import com.group6.entities.*;
 import com.group6.manager.ConnectionManager;
 
 import javax.swing.*;
@@ -34,6 +31,7 @@ public class DSAForm extends JFrame {
         loginButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                // TODO Fix this lol
                 ErrorForm error = new ErrorForm("There is no sql connection yet dummy!");
             }
         });
@@ -169,17 +167,99 @@ public class DSAForm extends JFrame {
         });
 
         // TODO Code for update and insert
-        
+
 
         //==============================================================================================================
         // Commissioner
         //==============================================================================================================
+        final ArrayList<IEntity> stationsSearched = new ArrayList<IEntity>();
+        final ArrayList<IEntity> prisonsSearched = new ArrayList<IEntity>();
 
+        DefaultListModel<String> stationSearchModel = new DefaultListModel<String>();
+        stationsList.setModel(stationSearchModel);
+
+        DefaultListModel<String> prisonSearchModel = new DefaultListModel<String>();
+        prisonListList.setModel(prisonSearchModel);
+
+        // List all stations
+        stationSearchButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Station station = new Station();
+
+                DefaultListModel<String> model = (DefaultListModel<String>)stationsList.getModel();
+                model.clear();
+
+                ArrayList<IEntity> entities = ConnectionManager.getAll(station, Station.class);
+                stationsSearched.clear();
+                stationsSearched.addAll(entities);
+
+                for ( IEntity entity : entities ) {
+                    model.addElement(((Station)entity).streetAddress);
+                }
+            }
+        });
+
+        // Fill in fields when selected from list
+        stationsList.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                Station station = (Station)stationsSearched.get(stationsList.getSelectedIndex());
+
+                stationPhoneNumberField.setText("" + station.phoneNumber);
+                stationStreetField.setText(station.streetAddress);
+                stationPostcodeField.setText("" + station.postcode);
+                stationCityField.setText(station.city);
+                stationChiefIDField.setText("" + station.chiefID);
+                stationFrequencyField.setText("" + String.format("%.2f", station.radioFrequency));
+            }
+        });
+
+        // List all prisons
+        prisonSearchButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Prison prison = new Prison();
+
+                DefaultListModel<String> model = (DefaultListModel<String>)prisonListList.getModel();
+                model.clear();
+
+                ArrayList<IEntity> entities = ConnectionManager.getAll(prison, Prison.class);
+                prisonsSearched.clear();
+                prisonsSearched.addAll(entities);
+
+                for ( IEntity entity : entities ) {
+                    model.addElement(((Prison)entity).streetAddress);
+                }
+            }
+        });
+
+        // Fill in fields when selected from list
+        prisonListList.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                Prison prison = (Prison)prisonsSearched.get(prisonListList.getSelectedIndex());
+
+                prisonPhoneNumberField.setText("" + prison.phoneNumber);
+                prisonStreetField.setText(prison.streetAddress);
+                prisonPostcodeField.setText("" + prison.postcode);
+                prisonCityField.setText(prison.city);
+                prisonCapacityField.setText("" + prison.capacity);
+                prisonOpenHourField.setText(prison.openHour);
+                prisonCloseHourField.setText(prison.closeHour);
+            }
+        });
 
         //==============================================================================================================
         // Admin
         //==============================================================================================================
-
+        adminSendButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String input = adminInputArea.getText();
+                adminOutputArea.setText(ConnectionManager.send(input));
+            }
+        });
 
     }
 
@@ -290,5 +370,7 @@ public class DSAForm extends JFrame {
     private JLabel prisonCapacityLabel;
     private JLabel prisonCloseHourLabel;
     private JLabel prisonOpenHourLabel;
+    private JButton prisonSearchButton;
+    private JButton stationSearchButton;
 
 }

@@ -1,5 +1,6 @@
 package com.group6.manager;
 
+import com.group6.ErrorForm;
 import com.group6.entities.IEntity;
 
 import java.sql.*;
@@ -39,14 +40,17 @@ public class ConnectionManager {
             statement.close();
             connection.close();
         } catch(SQLException se) {
+            new ErrorForm(se.getMessage());
             se.printStackTrace();
         } catch(Exception e) {
+            new ErrorForm("Could not find JDBC driver:" + JDBC_DRIVER);
             e.printStackTrace();
         } finally {
             try {
                 if ( statement != null )
                     statement.close();
             } catch (SQLException se) {
+                new ErrorForm(se.getMessage());
                 se.printStackTrace();
             }
 
@@ -54,6 +58,7 @@ public class ConnectionManager {
                 if ( connection != null )
                     connection.close();
             } catch (SQLException se) {
+                new ErrorForm(se.getMessage());
                 se.printStackTrace();
             }
         }
@@ -89,14 +94,17 @@ public class ConnectionManager {
             statement.close();
             connection.close();
         } catch(SQLException se) {
+            new ErrorForm(se.getMessage());
             se.printStackTrace();
         } catch(Exception e) {
+            new ErrorForm("Could not find JDBC driver:" + JDBC_DRIVER);
             e.printStackTrace();
         } finally {
             try {
                 if ( statement != null )
                     statement.close();
             } catch (SQLException se) {
+                new ErrorForm(se.getMessage());
                 se.printStackTrace();
             }
 
@@ -104,6 +112,7 @@ public class ConnectionManager {
                 if ( connection != null )
                     connection.close();
             } catch (SQLException se) {
+                new ErrorForm(se.getMessage());
                 se.printStackTrace();
             }
         }
@@ -145,14 +154,17 @@ public class ConnectionManager {
             statement.close();
             connection.close();
         } catch(SQLException se) {
+            new ErrorForm(se.getMessage());
             se.printStackTrace();
         } catch(Exception e) {
+            new ErrorForm("Could not find JDBC driver:" + JDBC_DRIVER);
             e.printStackTrace();
         } finally {
             try {
                 if ( statement != null )
                     statement.close();
             } catch (SQLException se) {
+                new ErrorForm(se.getMessage());
                 se.printStackTrace();
             }
 
@@ -160,6 +172,7 @@ public class ConnectionManager {
                 if ( connection != null )
                     connection.close();
             } catch (SQLException se) {
+                new ErrorForm(se.getMessage());
                 se.printStackTrace();
             }
         }

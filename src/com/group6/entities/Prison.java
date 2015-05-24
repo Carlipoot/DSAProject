@@ -11,8 +11,8 @@ public class Prison implements IEntity {
     public int postcode;
     public String city;
     public int capacity;
-    String openHour;
-    String closeHour;
+    public String openHour;
+    public String closeHour;
 
     public Prison() {
 
