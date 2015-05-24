@@ -205,7 +205,7 @@
                                 </constraints>
                                 <properties>
                                   <labelFor value="e6584"/>
-                                  <text value="Post Code"/>
+                                  <text value="Postcode"/>
                                 </properties>
                               </component>
                               <component id="1438b" class="javax.swing.JTextField" binding="peopleCityField">

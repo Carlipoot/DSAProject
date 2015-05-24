@@ -6,8 +6,8 @@ import java.sql.SQLException;
 
 public class Offence implements IEntity {
 
-    public int offenceID;
-    public int personID;
+    public int offenceID = -1;
+    public int personID = -1;
     public Date date;
     public int postcode;
     public String description;
@@ -26,12 +26,18 @@ public class Offence implements IEntity {
 
     @Override
     public String select() {
-        return "SELECT * FROM Offences";
+        if ( personID >= 0 )
+            return "SELECT * FROM Offences WHERE PersonID = " + personID;
+        else
+            return null;
     }
 
     @Override
     public String selectAll() {
-        return "SELECT * FROM Offences ORDER BY OffenceID";
+        if ( personID >= 0 )
+            return "SELECT * FROM Offences WHERE PersonID = " + personID;
+        else
+            return null;
     }
 
     @Override

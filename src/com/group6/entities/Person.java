@@ -6,7 +6,7 @@ import java.sql.SQLException;
 
 public class Person implements IEntity {
 
-    public int personID;
+    public int personID = -1;
     public String name;
     public Date birthDate;
     public String streetAddress;
@@ -30,12 +30,18 @@ public class Person implements IEntity {
 
     @Override
     public String select() {
-        return "SELECT * FROM People WHERE Name = " + "'Emma Baker'";
+        if ( name != null && streetAddress != null )
+            return "SELECT * FROM People WHERE Name LIKE '%" + name + "%' AND StreetAddress LIKE '%" + streetAddress + "%'";
+        else
+            return null;
     }
 
     @Override
     public String selectAll() {
-        return "SELECT * FROM People ORDER BY PersonID";
+        if ( name != null && streetAddress != null )
+            return "SELECT * FROM People WHERE Name LIKE '%" + name + "%' AND StreetAddress LIKE '%" + streetAddress + "%'";
+        else
+            return null;
     }
 
     @Override

@@ -1,10 +1,20 @@
 package com.group6;
 
+import com.group6.entities.Arrest;
+import com.group6.entities.IEntity;
+import com.group6.entities.Offence;
+import com.group6.entities.Person;
+import com.group6.manager.ConnectionManager;
+
 import javax.swing.*;
+import javax.swing.event.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 public class DSAForm extends JFrame {
+
+    Person currentPerson = null;
 
     public DSAForm() {
         super();
@@ -17,13 +27,126 @@ public class DSAForm extends JFrame {
         setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        // Add event handlers
+
+        //==============================================================================================================
+        // Login
+        //==============================================================================================================
         loginButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 ErrorForm error = new ErrorForm("There is no sql connection yet dummy!");
             }
         });
+
+        //==============================================================================================================
+        // Officer
+        //==============================================================================================================
+        final ArrayList<IEntity> peopleSearched = new ArrayList<IEntity>();
+        final ArrayList<IEntity> offencesSearched = new ArrayList<IEntity>();
+        final ArrayList<IEntity> arrestsSearched = new ArrayList<IEntity>();
+
+        DefaultListModel<String> peopleSearchModel = new DefaultListModel<String>();
+        peopleSearchList.setModel(peopleSearchModel);
+
+        DefaultListModel<String> offenceSearchModel = new DefaultListModel<String>();
+        offenceListList.setModel(offenceSearchModel);
+
+        DefaultListModel<String> arrestSearchModel = new DefaultListModel<String>();
+        arrestsList.setModel(arrestSearchModel);
+
+        // Search on Name and StreetAddress
+        peopleSearchButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Person person = new Person();
+                person.name = peopleNameField.getText();
+                person.streetAddress = peopleStreetField.getText();
+
+                DefaultListModel<String> model = (DefaultListModel<String>)peopleSearchList.getModel();
+                model.clear();
+
+                ArrayList<IEntity> entities = ConnectionManager.getAll(person, Person.class);
+                peopleSearched.clear();
+                peopleSearched.addAll(entities);
+
+                for ( IEntity entity : entities ) {
+                    model.addElement(((Person)entity).name);
+                }
+            }
+        });
+
+        // Select from list to update all fields for that person
+        peopleSearchList.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if ( e.getValueIsAdjusting() ) {
+                    currentPerson = (Person)peopleSearched.get(peopleSearchList.getSelectedIndex());
+
+                    peopleCurrentLabel.setText("Current Person: " + currentPerson.name);
+                    peopleNameField.setText(currentPerson.name);
+                    peopleBirthDateField.setText(currentPerson.birthDate.toString());
+                    peopleStreetField.setText(currentPerson.streetAddress);
+                    peoplePostCodeField.setText("" + currentPerson.postcode);
+                    peopleCityField.setText(currentPerson.city);
+                    peopleGenderField.setText(currentPerson.gender);
+
+                    Offence offence = new Offence();
+                    offence.personID = currentPerson.personID;
+
+                    ArrayList<IEntity> offenceEntities = ConnectionManager.getAll(offence, Offence.class);
+                    offencesSearched.clear();
+                    offencesSearched.addAll(offenceEntities);
+
+
+                    Arrest arrest = new Arrest();
+                    arrest.personID = currentPerson.personID;
+
+                    ArrayList<IEntity> arrestEntities = ConnectionManager.getAll(arrest, Arrest.class);
+                    arrestsSearched.clear();
+                    arrestsSearched.addAll(arrestEntities);
+
+                }
+            }
+        });
+
+        // Update tab when selected
+        peopleTabbedPane.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                if ( currentPerson != null && currentPerson.personID >= 0 ) {
+                    // Offences
+                    if ( peopleTabbedPane.getSelectedIndex() == 1 ) {
+                        DefaultListModel<String> model = (DefaultListModel<String>)offenceListList.getModel();
+                        model.clear();
+
+                        for ( IEntity entity : offencesSearched ) {
+                            model.addElement(((Offence)entity).date.toString());
+                        }
+                    }
+                    // Arrests
+                    else if ( peopleTabbedPane.getSelectedIndex() == 2 ) {
+                        DefaultListModel<String> model = (DefaultListModel<String>)arrestsList.getModel();
+                        model.clear();
+
+                        for ( IEntity entity : arrestsSearched ) {
+                            model.addElement(((Arrest)entity).date.toString());
+                        }
+                    }
+                }
+            }
+        });
+
+
+        //==============================================================================================================
+        // Commissioner
+        //==============================================================================================================
+
+
+        //==============================================================================================================
+        // Admin
+        //==============================================================================================================
+
+
     }
 
     private JTabbedPane tabbedPane;

@@ -19,6 +19,7 @@ public class ErrorForm extends JFrame {
 
         setTitle("Error Message");
         setVisible(true);
+        setResizable(false);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         errorMessageArea.setText(message);

@@ -17,19 +17,16 @@ public class ConnectionManager {
     static final String USER = "s2841114"; //= "s2794576"; //= "s2841114";
     static final String PASS = "nether"; //= "asdf"; // = "nether";
 
-    public static IEntity get(Class<? extends IEntity> clazz) {
+    public static IEntity get(IEntity entity, Class<? extends IEntity> clazz) {
         Connection connection = null;
         Statement statement = null;
         ResultSet resultSet = null;
-        IEntity entity = null;
 
         try{
             Class.forName(JDBC_DRIVER);
 
             connection = DriverManager.getConnection(DB_URL, USER, PASS);
             statement = connection.createStatement();
-
-            entity = clazz.newInstance();
 
             if ( entity.select() != null )
                 resultSet = statement.executeQuery(entity.select());
@@ -64,7 +61,7 @@ public class ConnectionManager {
         return entity;
     }
 
-    public static ArrayList<IEntity> getAll(Class<? extends IEntity> clazz) {
+    public static ArrayList<IEntity> getAll(IEntity entity, Class<? extends IEntity> clazz) {
         Connection connection = null;
         Statement statement = null;
         ResultSet resultSet = null;
@@ -76,14 +73,14 @@ public class ConnectionManager {
             connection = DriverManager.getConnection(DB_URL, USER, PASS);
             statement = connection.createStatement();
 
-            if ( clazz.newInstance().selectAll() != null )
-                resultSet = statement.executeQuery(clazz.newInstance().selectAll());
+            if ( entity.selectAll() != null )
+                resultSet = statement.executeQuery(entity.selectAll());
 
             if ( resultSet != null ) {
                 while ( resultSet.next() ) {
-                    IEntity entity = clazz.newInstance();
-                    entity.set(resultSet);
-                    entities.add(entity);
+                    IEntity newEntity = clazz.newInstance();
+                    newEntity.set(resultSet);
+                    entities.add(newEntity);
                 }
 
                 resultSet.close();
