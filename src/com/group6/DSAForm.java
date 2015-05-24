@@ -75,7 +75,7 @@ public class DSAForm extends JFrame {
             }
         });
 
-        // Select from list to update all fields for that person
+        // Select from list to update ALL fields/tabs for that person
         peopleSearchList.addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
@@ -96,7 +96,9 @@ public class DSAForm extends JFrame {
                     ArrayList<IEntity> offenceEntities = ConnectionManager.getAll(offence, Offence.class);
                     offencesSearched.clear();
                     offencesSearched.addAll(offenceEntities);
-
+                    offenceDateField.setText("");
+                    offencePostcodeField.setText("");
+                    offenceDescriptionArea.setText("");
 
                     Arrest arrest = new Arrest();
                     arrest.personID = currentPerson.personID;
@@ -104,7 +106,9 @@ public class DSAForm extends JFrame {
                     ArrayList<IEntity> arrestEntities = ConnectionManager.getAll(arrest, Arrest.class);
                     arrestsSearched.clear();
                     arrestsSearched.addAll(arrestEntities);
-
+                    arrestDateField.setText("");
+                    arrestPostcodeField.setText("");
+                    arrestEvidenceArea.setText("");
                 }
             }
         });
@@ -136,6 +140,36 @@ public class DSAForm extends JFrame {
             }
         });
 
+        // Select from list to update fields for that offence
+        offenceListList.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if (e.getValueIsAdjusting()) {
+                    Offence offence = (Offence)offencesSearched.get(offenceListList.getSelectedIndex());
+
+                    offenceDateField.setText(offence.date.toString());
+                    offencePostcodeField.setText("" + offence.postcode);
+                    offenceDescriptionArea.setText(offence.description);
+                }
+            }
+        });
+
+        // Select from list to update fields for that offence
+        arrestsList.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if (e.getValueIsAdjusting()) {
+                    Arrest arrest = (Arrest)arrestsSearched.get(arrestsList.getSelectedIndex());
+
+                    arrestDateField.setText(arrest.date.toString());
+                    arrestPostcodeField.setText("" + arrest.postcode);
+                    arrestEvidenceArea.setText(arrest.evidence);
+                }
+            }
+        });
+
+        // TODO Code for update and insert
+        
 
         //==============================================================================================================
         // Commissioner

@@ -27,7 +27,7 @@ public class Arrest implements IEntity {
     @Override
     public String select() {
         if ( personID >= 0 )
-            return "SELECT * FROM Arrests WHERE PersonID = " + personID;
+            return "SELECT * FROM Arrests WHERE PersonID = " + personID + " ORDER BY \"Date\"";
         else
             return null;
     }
@@ -35,7 +35,7 @@ public class Arrest implements IEntity {
     @Override
     public String selectAll() {
         if ( personID >= 0 )
-            return "SELECT * FROM Arrests WHERE PersonID = " + personID;
+            return "SELECT * FROM Arrests WHERE PersonID = " + personID + " ORDER BY \"Date\"";
         else
             return null;
     }
