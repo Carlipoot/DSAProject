@@ -288,7 +288,7 @@ public class DSAForm extends JFrame {
             public void valueChanged(ListSelectionEvent e) {
                 if ( !e.getValueIsAdjusting() )
                     return;
-                
+
                 Station station = (Station)stationsSearched.get(stationsList.getSelectedIndex());
 
                 stationPhoneNumberField.setText("" + station.phoneNumber);

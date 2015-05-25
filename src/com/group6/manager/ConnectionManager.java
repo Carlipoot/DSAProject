@@ -146,7 +146,7 @@ public class ConnectionManager {
             int cols = resultSetMetaData.getColumnCount();
 
             for ( int rows = 0; resultSet.next(); rows++ ){
-                if ( rows > 1 )
+                if ( rows >= 1 )
                     returnString.append("\n");
 
                 for (int col = 1; col <= cols; col++ ) {
@@ -155,8 +155,6 @@ public class ConnectionManager {
 
                     returnString.append(resultSet.getString(col));
                 }
-
-                //System.out.println(returnString);
             }
 
             resultSet.close();
@@ -188,11 +186,7 @@ public class ConnectionManager {
 
         return returnString.toString();
     }
-
-
-
-
-
+    
 
     public static void test() {
         Connection connection = null;

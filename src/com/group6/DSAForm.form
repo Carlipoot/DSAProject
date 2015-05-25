@@ -1252,8 +1252,8 @@
                   <component id="e2b6e" class="javax.swing.JTextArea" binding="adminOutputArea">
                     <constraints/>
                     <properties>
-                      <lineWrap value="true"/>
-                      <wrapStyleWord value="true"/>
+                      <lineWrap value="false"/>
+                      <wrapStyleWord value="false"/>
                     </properties>
                   </component>
                 </children>
