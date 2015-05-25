@@ -1,5 +1,7 @@
 package com.group6.entities;
 
+import com.group6.ErrorForm;
+
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -70,6 +72,7 @@ public class Person implements IEntity {
             city = resultSet.getString("City");
             gender = resultSet.getString("Gender");
         } catch (SQLException se) {
+            new ErrorForm("Could not get data");
             se.printStackTrace();
         }
     }

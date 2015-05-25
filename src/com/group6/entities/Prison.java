@@ -1,5 +1,7 @@
 package com.group6.entities;
 
+import com.group6.ErrorForm;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -66,6 +68,7 @@ public class Prison implements IEntity {
             openHour = resultSet.getString("OpenHours");
             closeHour = resultSet.getString("CloseHours");
         } catch (SQLException se) {
+            new ErrorForm("Could not get data");
             se.printStackTrace();
         }
     }

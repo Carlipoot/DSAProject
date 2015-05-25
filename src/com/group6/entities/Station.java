@@ -1,5 +1,7 @@
 package com.group6.entities;
 
+import com.group6.ErrorForm;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -63,6 +65,7 @@ public class Station implements IEntity {
             chiefID = resultSet.getInt("ChiefID");
             radioFrequency = resultSet.getInt("RadioFrequency");
         } catch (SQLException se) {
+            new ErrorForm("Could not get data");
             se.printStackTrace();
         }
     }

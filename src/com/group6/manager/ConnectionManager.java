@@ -18,10 +18,11 @@ public class ConnectionManager {
     static final String USER = "s2841114"; //= "s2794576"; //= "s2841114";
     static final String PASS = "nether"; //= "asdf"; // = "nether";
 
-    public static IEntity get(IEntity entity, Class<? extends IEntity> clazz) {
+    public static Boolean get(IEntity entity, Class<? extends IEntity> clazz) {
         Connection connection = null;
         Statement statement = null;
         ResultSet resultSet = null;
+        Boolean found = false;
 
         try{
             Class.forName(JDBC_DRIVER);
@@ -32,8 +33,12 @@ public class ConnectionManager {
             if ( entity.select() != null )
                 resultSet = statement.executeQuery(entity.select());
 
-            if ( resultSet != null && resultSet.next() ) {
-                entity.set(resultSet);
+            if ( resultSet != null  ) {
+                found = resultSet.next();
+
+                if ( found )
+                    entity.set(resultSet);
+
                 resultSet.close();
             }
 
@@ -63,7 +68,7 @@ public class ConnectionManager {
             }
         }
 
-        return entity;
+        return found;
     }
 
     public static ArrayList<IEntity> getAll(IEntity entity, Class<? extends IEntity> clazz) {

@@ -25,20 +25,6 @@ public class DSAForm extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 
-        //==============================================================================================================
-        // Login
-        //==============================================================================================================
-        loginButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // TODO Fix this lol
-                ErrorForm error = new ErrorForm("There is no sql connection yet dummy!");
-            }
-        });
-
-        //==============================================================================================================
-        // Officer
-        //==============================================================================================================
         final ArrayList<IEntity> peopleSearched = new ArrayList<IEntity>();
         final ArrayList<IEntity> offencesSearched = new ArrayList<IEntity>();
         final ArrayList<IEntity> arrestsSearched = new ArrayList<IEntity>();
@@ -52,6 +38,71 @@ public class DSAForm extends JFrame {
         DefaultListModel<String> arrestSearchModel = new DefaultListModel<String>();
         arrestsList.setModel(arrestSearchModel);
 
+        final ArrayList<IEntity> stationsSearched = new ArrayList<IEntity>();
+        final ArrayList<IEntity> prisonsSearched = new ArrayList<IEntity>();
+
+        DefaultListModel<String> stationSearchModel = new DefaultListModel<String>();
+        stationsList.setModel(stationSearchModel);
+
+        DefaultListModel<String> prisonSearchModel = new DefaultListModel<String>();
+        prisonListList.setModel(prisonSearchModel);
+
+        //==============================================================================================================
+        // Login
+        //==============================================================================================================
+        // Login to system
+        loginButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                User user = new User();
+                user.username = usernameField.getText();
+
+                tabbedPane.setEnabledAt(0, false);
+
+                if ( ConnectionManager.get(user, User.class) ) {
+                    String type = user.type;
+
+                    if ( type.equals("Officer") ) {
+                        tabbedPane.setEnabledAt(1, true);
+                        tabbedPane.setSelectedIndex(1);
+                    } else if ( type.equals("Commissioner")) {
+                        tabbedPane.setEnabledAt(3, true);
+                        tabbedPane.setSelectedIndex(3);
+                    } else if ( type.equals("Admin")) {
+                        tabbedPane.setEnabledAt(5, true);
+                        tabbedPane.setSelectedIndex(5);
+                    } else {
+                        new ErrorForm("You have no privileges");
+                    }
+                } else {
+                    new ErrorForm("Wrong username or password");
+                }
+            }
+        });
+
+        // Logout, by clicking the login tab again to reset everything
+        tabbedPane.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                if ( tabbedPane.getSelectedIndex() == 0 ) {
+                    tabbedPane.setEnabledAt(1, false);
+                    tabbedPane.setEnabledAt(2, false);
+                    tabbedPane.setEnabledAt(3, false);
+                    tabbedPane.setEnabledAt(4, false);
+                    tabbedPane.setEnabledAt(5, false);
+
+                    peopleSearched.clear();
+                    offencesSearched.clear();
+                    arrestsSearched.clear();
+                    stationsSearched.clear();
+                    prisonsSearched.clear();
+                }
+            }
+        });
+
+        //==============================================================================================================
+        // Officer
+        //==============================================================================================================
         // Search on Name and StreetAddress
         peopleSearchButton.addActionListener(new ActionListener() {
             @Override
@@ -172,15 +223,6 @@ public class DSAForm extends JFrame {
         //==============================================================================================================
         // Commissioner
         //==============================================================================================================
-        final ArrayList<IEntity> stationsSearched = new ArrayList<IEntity>();
-        final ArrayList<IEntity> prisonsSearched = new ArrayList<IEntity>();
-
-        DefaultListModel<String> stationSearchModel = new DefaultListModel<String>();
-        stationsList.setModel(stationSearchModel);
-
-        DefaultListModel<String> prisonSearchModel = new DefaultListModel<String>();
-        prisonListList.setModel(prisonSearchModel);
-
         // List all stations
         stationSearchButton.addActionListener(new ActionListener() {
             @Override
@@ -253,6 +295,7 @@ public class DSAForm extends JFrame {
         //==============================================================================================================
         // Admin
         //==============================================================================================================
+        // Send query to the database
         adminSendButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

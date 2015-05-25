@@ -1,5 +1,7 @@
 package com.group6.entities;
 
+import com.group6.ErrorForm;
+
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -64,6 +66,7 @@ public class Offence implements IEntity {
             postcode = resultSet.getInt("Postcode");
             description = resultSet.getString("Description");
         } catch (SQLException se) {
+            new ErrorForm("Could not get data");
             se.printStackTrace();
         }
     }
