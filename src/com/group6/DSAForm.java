@@ -24,27 +24,26 @@ public class DSAForm extends JFrame {
         setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-
         final ArrayList<IEntity> peopleSearched = new ArrayList<IEntity>();
         final ArrayList<IEntity> offencesSearched = new ArrayList<IEntity>();
         final ArrayList<IEntity> arrestsSearched = new ArrayList<IEntity>();
 
-        DefaultListModel<String> peopleSearchModel = new DefaultListModel<String>();
+        final DefaultListModel<String> peopleSearchModel = new DefaultListModel<String>();
         peopleSearchList.setModel(peopleSearchModel);
 
-        DefaultListModel<String> offenceSearchModel = new DefaultListModel<String>();
+        final DefaultListModel<String> offenceSearchModel = new DefaultListModel<String>();
         offenceListList.setModel(offenceSearchModel);
 
-        DefaultListModel<String> arrestSearchModel = new DefaultListModel<String>();
+        final DefaultListModel<String> arrestSearchModel = new DefaultListModel<String>();
         arrestsList.setModel(arrestSearchModel);
 
         final ArrayList<IEntity> stationsSearched = new ArrayList<IEntity>();
         final ArrayList<IEntity> prisonsSearched = new ArrayList<IEntity>();
 
-        DefaultListModel<String> stationSearchModel = new DefaultListModel<String>();
+        final DefaultListModel<String> stationSearchModel = new DefaultListModel<String>();
         stationsList.setModel(stationSearchModel);
 
-        DefaultListModel<String> prisonSearchModel = new DefaultListModel<String>();
+        final DefaultListModel<String> prisonSearchModel = new DefaultListModel<String>();
         prisonListList.setModel(prisonSearchModel);
 
         //==============================================================================================================
@@ -56,10 +55,11 @@ public class DSAForm extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 User user = new User();
                 user.username = usernameField.getText();
+                user.password = new String(passwordField.getPassword());
 
-                tabbedPane.setEnabledAt(0, false);
+                int result = ConnectionManager.get(user, User.class);
 
-                if ( ConnectionManager.get(user, User.class) ) {
+                if ( result == 1 ) {
                     String type = user.type;
 
                     if ( type.equals("Officer") ) {
@@ -74,7 +74,7 @@ public class DSAForm extends JFrame {
                     } else {
                         new ErrorForm("You have no privileges");
                     }
-                } else {
+                } else if ( result == 0 ) {
                     new ErrorForm("Wrong username or password");
                 }
             }
@@ -96,6 +96,46 @@ public class DSAForm extends JFrame {
                     arrestsSearched.clear();
                     stationsSearched.clear();
                     prisonsSearched.clear();
+
+                    peopleSearchModel.clear();
+                    offenceSearchModel.clear();
+                    arrestSearchModel.clear();
+                    stationSearchModel.clear();
+                    prisonSearchModel.clear();
+
+                    peopleCurrentLabel.setText("Current Person: ");
+                    peopleNameField.setText("");
+                    peopleBirthDateField.setText("");
+                    peopleStreetField.setText("");
+                    peoplePostCodeField.setText("");
+                    peopleCityField.setText("");
+                    peopleGenderField.setText("");
+
+                    offenceDateField.setText("");
+                    offencePostcodeField.setText("");
+                    offenceDescriptionArea.setText("");
+
+                    arrestDateField.setText("");
+                    arrestPostcodeField.setText("");
+                    arrestEvidenceArea.setText("");
+
+                    stationPhoneNumberField.setText("");
+                    stationStreetField.setText("");
+                    stationPostcodeField.setText("");
+                    stationCityField.setText("");
+                    stationChiefIDField.setText("");
+                    stationFrequencyField.setText("");
+
+                    prisonPhoneNumberField.setText("");
+                    prisonStreetField.setText("");
+                    prisonPostcodeField.setText("");
+                    prisonCityField.setText("");
+                    prisonCapacityField.setText("");
+                    prisonOpenHourField.setText("");
+                    prisonCloseHourField.setText("");
+
+                    adminInputArea.setText("");
+                    adminOutputArea.setText("");
                 }
             }
         });
@@ -237,7 +277,7 @@ public class DSAForm extends JFrame {
                 stationsSearched.addAll(entities);
 
                 for ( IEntity entity : entities ) {
-                    model.addElement(((Station)entity).streetAddress);
+                    model.addElement(((Station)entity).streetAddress + ", " + ((Station) entity).city);
                 }
             }
         });
@@ -246,6 +286,9 @@ public class DSAForm extends JFrame {
         stationsList.addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
+                if ( !e.getValueIsAdjusting() )
+                    return;
+                
                 Station station = (Station)stationsSearched.get(stationsList.getSelectedIndex());
 
                 stationPhoneNumberField.setText("" + station.phoneNumber);
@@ -280,6 +323,9 @@ public class DSAForm extends JFrame {
         prisonListList.addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
+                if ( !e.getValueIsAdjusting() )
+                    return;
+
                 Prison prison = (Prison)prisonsSearched.get(prisonListList.getSelectedIndex());
 
                 prisonPhoneNumberField.setText("" + prison.phoneNumber);

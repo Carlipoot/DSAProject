@@ -33,7 +33,7 @@ public class Person implements IEntity {
     @Override
     public String select() {
         if ( name != null && streetAddress != null )
-            return "SELECT * FROM People WHERE Name LIKE '%" + name + "%' AND StreetAddress LIKE '%" + streetAddress + "%'";
+            return "SELECT * FROM People WHERE Name LIKE '%" + name.replace("'", "''") + "%' AND StreetAddress LIKE '%" + streetAddress.replace("'", "''") + "%' ORDER BY Name";
         else
             return null;
     }
@@ -41,7 +41,7 @@ public class Person implements IEntity {
     @Override
     public String selectAll() {
         if ( name != null && streetAddress != null )
-            return "SELECT * FROM People WHERE Name LIKE '%" + name + "%' AND StreetAddress LIKE '%" + streetAddress + "%'";
+            return "SELECT * FROM People WHERE Name LIKE '%" + name.replace("'", "''") + "%' AND StreetAddress LIKE '%" + streetAddress.replace("'", "''") + "%' ORDER BY Name";
         else
             return null;
     }

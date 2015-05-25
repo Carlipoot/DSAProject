@@ -24,10 +24,10 @@ public class User implements IEntity {
     @Override
     public String select() {
         if ( username.isEmpty() || password.isEmpty() ) {
-            new ErrorForm("Wrong username or password");
+            //new ErrorForm("Wrong username or password");
             return null;
         } else {
-            return "SELECT * FROM Users WHERE Username = '" + username + "'";
+            return "SELECT * FROM Users WHERE Username = '" + username.replace("'", "''") + "'";
         }
     }
 

@@ -36,7 +36,7 @@ public class Station implements IEntity {
 
     @Override
     public String selectAll() {
-        return "SELECT * FROM Buildings, Stations WHERE BuildingID = StationID ORDER BY StationID";
+        return "SELECT * FROM Buildings, Stations WHERE BuildingID = StationID ORDER BY City";
     }
 
     @Override
