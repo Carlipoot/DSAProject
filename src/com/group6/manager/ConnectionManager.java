@@ -18,31 +18,17 @@ public class ConnectionManager {
     static final String USER = "s2841114"; //= "s2794576"; //= "s2841114";
     static final String PASS = "nether"; //= "asdf"; // = "nether";
 
-    public static int get(IEntity entity, Class<? extends IEntity> clazz) {
+    public static int get(IEntity entity) {
         Connection connection = null;
-        Statement statement = null;
-        ResultSet resultSet = null;
         int found = 0;
 
         try{
             Class.forName(JDBC_DRIVER);
 
             connection = DriverManager.getConnection(DB_URL, USER, PASS);
-            statement = connection.createStatement();
 
-            if ( entity.select() != null )
-                resultSet = statement.executeQuery(entity.select());
+            found = entity.select(connection) ? 1 : 0;
 
-            if ( resultSet != null  ) {
-                found = resultSet.next() ? 1 : 0;
-
-                if ( found == 1 )
-                    entity.set(resultSet);
-
-                resultSet.close();
-            }
-
-            statement.close();
             connection.close();
         } catch(SQLException se) {
             new ErrorForm(se.getMessage());
@@ -53,15 +39,6 @@ public class ConnectionManager {
             e.printStackTrace();
             found = -1;
         } finally {
-            try {
-                if ( statement != null )
-                    statement.close();
-            } catch (SQLException se) {
-                new ErrorForm(se.getMessage());
-                se.printStackTrace();
-                found = -1;
-            }
-
             try {
                 if ( connection != null )
                     connection.close();
@@ -75,32 +52,87 @@ public class ConnectionManager {
         return found;
     }
 
-    public static ArrayList<IEntity> getAll(IEntity entity, Class<? extends IEntity> clazz) {
+    public static Boolean update(IEntity entity) {
         Connection connection = null;
-        Statement statement = null;
-        ResultSet resultSet = null;
-        ArrayList<IEntity> entities = new ArrayList<IEntity>();
+        Boolean returnValue = false;
 
         try{
             Class.forName(JDBC_DRIVER);
 
             connection = DriverManager.getConnection(DB_URL, USER, PASS);
-            statement = connection.createStatement();
 
-            if ( entity.selectAll() != null )
-                resultSet = statement.executeQuery(entity.selectAll());
+            returnValue = entity.update(connection);
 
-            if ( resultSet != null ) {
-                while ( resultSet.next() ) {
-                    IEntity newEntity = clazz.newInstance();
-                    newEntity.set(resultSet);
-                    entities.add(newEntity);
-                }
+            connection.close();
+        } catch(SQLException se) {
+            if ( se instanceof SQLIntegrityConstraintViolationException ) {
+                if ( se.getMessage().toLowerCase().contains("chief") )
+                    new ErrorForm("ChiefID does not exist");
+            } else
+                new ErrorForm(se.getMessage());
 
-                resultSet.close();
+            se.printStackTrace();
+        } catch(Exception e) {
+            new ErrorForm("Could not find JDBC driver:" + JDBC_DRIVER);
+            e.printStackTrace();
+        } finally {
+            try {
+                if ( connection != null )
+                    connection.close();
+            } catch (SQLException se) {
+                new ErrorForm(se.getMessage());
+                se.printStackTrace();
             }
+        }
 
-            statement.close();
+        return returnValue;
+    }
+
+    public static int insert(IEntity entity) {
+        Connection connection = null;
+        int found = 0;
+
+        try{
+            Class.forName(JDBC_DRIVER);
+
+            connection = DriverManager.getConnection(DB_URL, USER, PASS);
+
+            found = entity.insert(connection) ? 1 : 0;
+
+            connection.close();
+        } catch(SQLException se) {
+            new ErrorForm(se.getMessage());
+            se.printStackTrace();
+            found = -1;
+        } catch(Exception e) {
+            new ErrorForm("Could not find JDBC driver:" + JDBC_DRIVER);
+            e.printStackTrace();
+            found = -1;
+        } finally {
+            try {
+                if ( connection != null )
+                    connection.close();
+            } catch (SQLException se) {
+                new ErrorForm(se.getMessage());
+                se.printStackTrace();
+                found = -1;
+            }
+        }
+
+        return found;
+    }
+
+    public static ArrayList<IEntity> getAll(IEntity entity) {
+        Connection connection = null;
+        ArrayList<IEntity> entities = null;
+
+        try{
+            Class.forName(JDBC_DRIVER);
+
+            connection = DriverManager.getConnection(DB_URL, USER, PASS);
+
+            entities = entity.selectAll(connection);
+
             connection.close();
         } catch(SQLException se) {
             new ErrorForm(se.getMessage());
@@ -109,14 +141,6 @@ public class ConnectionManager {
             new ErrorForm("Could not find JDBC driver:" + JDBC_DRIVER);
             e.printStackTrace();
         } finally {
-            try {
-                if ( statement != null )
-                    statement.close();
-            } catch (SQLException se) {
-                new ErrorForm(se.getMessage());
-                se.printStackTrace();
-            }
-
             try {
                 if ( connection != null )
                     connection.close();
@@ -185,86 +209,6 @@ public class ConnectionManager {
         }
 
         return returnString.toString();
-    }
-    
-
-    public static void test() {
-        Connection connection = null;
-        Statement statement = null;
-
-        try{
-            // Register driver
-            System.out.println("Registering Driver...");
-            Class.forName(JDBC_DRIVER);
-
-            // Begin the connection
-            System.out.println("Connecting to database...");
-            connection = DriverManager.getConnection(DB_URL, USER, PASS);
-
-            // Create a statement
-            System.out.println("Creating statement...\n");
-            statement = connection.createStatement();
-
-            // Make the query and send it to the database
-            String query = "SELECT   E.ssn, E.name, E.bdate " +
-                    "FROM     Employee E " +
-                    "WHERE    E.ssn IN " +
-                    "(SELECT  W.essn " +
-                    "FROM     Works_on W " +
-                    "GROUP BY W.essn " +
-                    "HAVING   count(*) = 1)";
-
-            ResultSet results = statement.executeQuery(query);
-
-            // Begin displaying results
-            System.out.println("Employees who work on only one Project:");
-
-            while(results.next()){
-                // Get all the data and print them to the console
-                int ssn = results.getInt("ssn");
-                String name = results.getString("name");
-                Date bdate = results.getDate("bdate");
-
-                System.out.println("SSN: " + ssn + ", Name: " + name + ", Birth Date: " + bdate);
-            }
-
-            // Close the statement and result set
-            statement.close();
-            results.close();
-
-            // Close the connection
-            System.out.println("Closing connection to database...");
-            connection.close();
-
-        } catch(SQLException se) {
-            // Handle errors for JDBC
-            se.printStackTrace();
-
-        } catch(Exception e) {
-            // Handle errors for Class.forName
-            e.printStackTrace();
-
-        } finally {
-            // If the statement didn't close then close it
-            try {
-                if ( statement != null )
-                    statement.close();
-
-            } catch (SQLException se) {
-                se.printStackTrace();
-            }
-
-            // If the connection didn't close then close it
-            try {
-                if ( connection != null )
-                    connection.close();
-
-            } catch (SQLException se) {
-                se.printStackTrace();
-            }
-        }
-
-        System.out.println("Task completed.");
     }
 
 }

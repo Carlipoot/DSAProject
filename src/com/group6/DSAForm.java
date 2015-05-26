@@ -7,6 +7,8 @@ import javax.swing.*;
 import javax.swing.event.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 public class DSAForm extends JFrame {
@@ -57,18 +59,18 @@ public class DSAForm extends JFrame {
                 user.username = usernameField.getText();
                 user.password = new String(passwordField.getPassword());
 
-                int result = ConnectionManager.get(user, User.class);
+                int result = ConnectionManager.get(user);
 
                 if ( result == 1 ) {
                     String type = user.type;
 
-                    if ( type.equals("Officer") ) {
+                    if ( type.equals("OFFICER") ) {
                         tabbedPane.setEnabledAt(1, true);
                         tabbedPane.setSelectedIndex(1);
-                    } else if ( type.equals("Commissioner")) {
+                    } else if ( type.equals("COMMISSIONER")) {
                         tabbedPane.setEnabledAt(3, true);
                         tabbedPane.setSelectedIndex(3);
-                    } else if ( type.equals("Admin")) {
+                    } else if ( type.equals("ADMIN")) {
                         tabbedPane.setEnabledAt(5, true);
                         tabbedPane.setSelectedIndex(5);
                     } else {
@@ -154,7 +156,7 @@ public class DSAForm extends JFrame {
                 DefaultListModel<String> model = (DefaultListModel<String>)peopleSearchList.getModel();
                 model.clear();
 
-                ArrayList<IEntity> entities = ConnectionManager.getAll(person, Person.class);
+                ArrayList<IEntity> entities = ConnectionManager.getAll(person);
                 peopleSearched.clear();
                 peopleSearched.addAll(entities);
 
@@ -182,7 +184,7 @@ public class DSAForm extends JFrame {
                     Offence offence = new Offence();
                     offence.personID = currentPerson.personID;
 
-                    ArrayList<IEntity> offenceEntities = ConnectionManager.getAll(offence, Offence.class);
+                    ArrayList<IEntity> offenceEntities = ConnectionManager.getAll(offence);
                     offencesSearched.clear();
                     offencesSearched.addAll(offenceEntities);
                     offenceDateField.setText("");
@@ -192,7 +194,7 @@ public class DSAForm extends JFrame {
                     Arrest arrest = new Arrest();
                     arrest.personID = currentPerson.personID;
 
-                    ArrayList<IEntity> arrestEntities = ConnectionManager.getAll(arrest, Arrest.class);
+                    ArrayList<IEntity> arrestEntities = ConnectionManager.getAll(arrest);
                     arrestsSearched.clear();
                     arrestsSearched.addAll(arrestEntities);
                     arrestDateField.setText("");
@@ -225,6 +227,32 @@ public class DSAForm extends JFrame {
                             model.addElement(((Arrest)entity).date.toString());
                         }
                     }
+                }
+            }
+        });
+
+        peopleUpdateButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Person person = null;
+                try {
+                    person = (Person)peopleSearched.get(peopleSearchList.getSelectedIndex());
+
+                    person.name = peopleNameField.getText();
+                    person.birthDate = new Date(new SimpleDateFormat("yyyy-MM-dd").parse(peopleBirthDateField.getText()).getTime());
+                    person.streetAddress = peopleStreetField.getText();
+                    person.postcode = Integer.parseInt(peoplePostCodeField.getText());
+                    person.city = peopleCityField.getText();
+                    person.gender = peopleGenderField.getText();
+
+                    if ( ConnectionManager.update(person) ) {
+                        currentPerson = person;
+
+                        peopleCurrentLabel.setText("Current Person: " + currentPerson.name);
+                        peopleSearchButton.doClick();
+                    }
+                } catch (Exception ex) {
+
                 }
             }
         });
@@ -272,7 +300,7 @@ public class DSAForm extends JFrame {
                 DefaultListModel<String> model = (DefaultListModel<String>)stationsList.getModel();
                 model.clear();
 
-                ArrayList<IEntity> entities = ConnectionManager.getAll(station, Station.class);
+                ArrayList<IEntity> entities = ConnectionManager.getAll(station);
                 stationsSearched.clear();
                 stationsSearched.addAll(entities);
 
@@ -300,6 +328,37 @@ public class DSAForm extends JFrame {
             }
         });
 
+        // Update the station info
+        stationUpdateButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Station station = null;
+                try {
+                    station = (Station) stationsSearched.get(stationsList.getSelectedIndex());
+
+                    station.phoneNumber = Long.parseLong(stationPhoneNumberField.getText());
+                    station.streetAddress = stationStreetField.getText();
+                    station.postcode = Integer.parseInt(stationPostcodeField.getText());
+                    station.city = stationCityField.getText();
+                    station.chiefID = Integer.parseInt(stationChiefIDField.getText());
+                    station.radioFrequency = Float.parseFloat(stationFrequencyField.getText());
+
+                    if ( ConnectionManager.update(station) ) {
+                        stationPhoneNumberField.setText("");
+                        stationStreetField.setText("");
+                        stationPostcodeField.setText("");
+                        stationCityField.setText("");
+                        stationChiefIDField.setText("");
+                        stationFrequencyField.setText("");
+
+                        stationSearchButton.doClick();
+                    }
+                } catch (Exception ex) {
+
+                }
+            }
+        });
+
         // List all prisons
         prisonSearchButton.addActionListener(new ActionListener() {
             @Override
@@ -309,7 +368,7 @@ public class DSAForm extends JFrame {
                 DefaultListModel<String> model = (DefaultListModel<String>)prisonListList.getModel();
                 model.clear();
 
-                ArrayList<IEntity> entities = ConnectionManager.getAll(prison, Prison.class);
+                ArrayList<IEntity> entities = ConnectionManager.getAll(prison);
                 prisonsSearched.clear();
                 prisonsSearched.addAll(entities);
 
@@ -335,6 +394,38 @@ public class DSAForm extends JFrame {
                 prisonCapacityField.setText("" + prison.capacity);
                 prisonOpenHourField.setText(prison.openHour);
                 prisonCloseHourField.setText(prison.closeHour);
+            }
+        });
+
+        prisonUpdateButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Prison prison = null;
+                try {
+                    prison = (Prison)prisonsSearched.get(prisonListList.getSelectedIndex());
+
+                    prison.phoneNumber = Long.parseLong(prisonPhoneNumberField.getText());
+                    prison.streetAddress = prisonStreetField.getText();
+                    prison.postcode = Integer.parseInt(prisonPostcodeField.getText());
+                    prison.city = prisonCityField.getText();
+                    prison.capacity = Integer.parseInt(prisonCapacityField.getText());
+                    prison.openHour = prisonOpenHourField.getText();
+                    prison.closeHour = prisonCloseHourField.getText();
+
+                    if ( ConnectionManager.update(prison) ) {
+                        prisonPhoneNumberField.setText("");
+                        prisonStreetField.setText("");
+                        prisonPostcodeField.setText("");
+                        prisonCityField.setText("");
+                        prisonCapacityField.setText("");
+                        prisonOpenHourField.setText("");
+                        prisonCloseHourField.setText("");
+
+                        prisonSearchButton.doClick();
+                    }
+                } catch (Exception ex) {
+
+                }
             }
         });
 

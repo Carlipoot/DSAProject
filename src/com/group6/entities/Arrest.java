@@ -2,9 +2,8 @@ package com.group6.entities;
 
 import com.group6.ErrorForm;
 
-import java.sql.Date;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.ArrayList;
 
 public class Arrest implements IEntity {
 
@@ -27,48 +26,75 @@ public class Arrest implements IEntity {
     }
 
     @Override
-    public String select() {
-        if ( personID >= 0 )
-            return "SELECT * FROM Arrests WHERE PersonID = " + personID + " ORDER BY \"Date\"";
-        else
-            return null;
-    }
-
-    @Override
-    public String selectAll() {
-        if ( personID >= 0 )
-            return "SELECT * FROM Arrests WHERE PersonID = " + personID + " ORDER BY \"Date\"";
-        else
-            return null;
-    }
-
-    @Override
-    public String insert() {
+    public Boolean select(Connection connection) throws SQLException {
         return null;
     }
 
     @Override
-    public String update() {
-        return null;
-    }
+    public ArrayList<IEntity> selectAll(Connection connection) throws SQLException {
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
 
-    @Override
-    public String delete() {
-        return null;
-    }
-
-    @Override
-    public void set(ResultSet resultSet) {
         try {
-            officerID = resultSet.getInt("OfficerID");
-            personID = resultSet.getInt("PersonID");
-            date = resultSet.getDate("Date");
-            postcode = resultSet.getInt("Postcode");
-            evidence = resultSet.getString("Evidence");
-        } catch (SQLException se) {
-            new ErrorForm("Could not get data");
-            se.printStackTrace();
+            ArrayList<IEntity> entities = new ArrayList<IEntity>();
+
+            statement = connection.prepareStatement("SELECT * FROM Arrests WHERE PersonID = ? ORDER BY \"Date\"");
+            statement.setInt(1, personID);
+
+            resultSet = statement.executeQuery();
+
+            while ( resultSet.next() ) {
+                Arrest arrest = new Arrest();
+                arrest.set(resultSet);
+                entities.add(arrest);
+            }
+
+            resultSet.close();
+            statement.close();
+
+            return entities;
+        } finally {
+            resultSet.close();
+            statement.close();
         }
+    }
+
+    @Override
+    public Boolean insert(Connection connection) throws SQLException {
+        PreparedStatement statement = null;
+        Boolean returnValue = false;
+
+        try {
+            statement = connection.prepareStatement("INSERT INTO Arrests VALUES (?, ?, ?, ?, ?)");
+            statement.setInt(1, personID);
+
+            returnValue = statement.execute();
+
+            statement.close();
+
+            return returnValue;
+        } finally {
+            statement.close();
+        }
+    }
+
+    @Override
+    public Boolean update(Connection connection) throws SQLException {
+        return null;
+    }
+
+    @Override
+    public Boolean delete(Connection connection) throws SQLException {
+        return null;
+    }
+
+    @Override
+    public void set(ResultSet resultSet) throws SQLException {
+        officerID = resultSet.getInt("OfficerID");
+        personID = resultSet.getInt("PersonID");
+        date = resultSet.getDate("Date");
+        postcode = resultSet.getInt("Postcode");
+        evidence = resultSet.getString("Evidence");
     }
 
     @Override

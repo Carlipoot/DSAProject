@@ -1,20 +1,29 @@
 package com.group6.entities;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 
 public interface IEntity {
 
-    public String select();
+    public Boolean select(Connection connection)
+            throws SQLException;
 
-    public String selectAll();
+    public ArrayList<IEntity> selectAll(Connection connection)
+            throws SQLException;
 
-    public String insert();
+    public Boolean insert(Connection connection)
+            throws SQLException;
 
-    public String update();
+    public Boolean update(Connection connection)
+            throws SQLException;
 
-    public String delete();
+    public Boolean delete(Connection connection)
+            throws SQLException;
 
-    public void set(ResultSet resultSet);
+    public void set(ResultSet resultSet)
+            throws SQLException;
 
     public String toString();
 
