@@ -97,11 +97,20 @@ public class Person implements IEntity {
 
     @Override
     public Boolean insert(Connection connection) throws SQLException {
-        if ( postcode < 0 ) {
-            new ErrorForm("Postcode cannot be negative");
+        if ( postcode <= 0 ) {
+            new ErrorForm("Postcode must be greater than 0");
             return false;
         } else if ( !gender.equals("M") && !gender.equals("F") ) {
             new ErrorForm("Gender must be M or F");
+            return false;
+        } else if ( streetAddress.isEmpty() ) {
+            new ErrorForm("Street Address cannot be empty");
+            return false;
+        } else if ( city.isEmpty() ) {
+            new ErrorForm("City cannot be empty");
+            return false;
+        }  else if ( name.isEmpty() ) {
+            new ErrorForm("Name cannot be empty");
             return false;
         }
 
@@ -140,14 +149,23 @@ public class Person implements IEntity {
 
     @Override
     public Boolean update(Connection connection) throws SQLException {
-        if ( personID < 0 ) {
-            new ErrorForm("Error with data keys");
+        if ( postcode <= 0 ) {
+            new ErrorForm("Postcode must be greater than 0");
             return false;
         } else if ( postcode < 0 ) {
             new ErrorForm("Postcode cannot be negative");
             return false;
         } else if ( !gender.equals("M") && !gender.equals("F") ) {
             new ErrorForm("Gender must be M or F");
+            return false;
+        } else if ( streetAddress.isEmpty() ) {
+            new ErrorForm("Street Address cannot be empty");
+            return false;
+        } else if ( city.isEmpty() ) {
+            new ErrorForm("City cannot be empty");
+            return false;
+        }  else if ( name.isEmpty() ) {
+            new ErrorForm("Name cannot be empty");
             return false;
         }
 

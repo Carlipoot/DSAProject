@@ -68,11 +68,17 @@ public class Station implements IEntity {
 
     @Override
     public Boolean insert(Connection connection) throws SQLException {
-        if ( postcode < 0 ) {
-            new ErrorForm("Postcode cannot be negative");
+        if ( postcode <= 0 ) {
+            new ErrorForm("Postcode must be greater than 0");
             return false;
         } else if ( radioFrequency < 0 ) {
             new ErrorForm("Cannot have negative frequency");
+            return false;
+        } else if ( streetAddress.isEmpty() ) {
+            new ErrorForm("Street Address cannot be empty");
+            return false;
+        } else if ( city.isEmpty() ) {
+            new ErrorForm("City cannot be empty");
             return false;
         }
 
@@ -95,8 +101,6 @@ public class Station implements IEntity {
             resultSet.next();
             int buildingID = resultSet.getInt(1);
             resultSet.close();
-
-            new ErrorForm("" + buildingID);
 
             statement.close();
 
@@ -129,11 +133,17 @@ public class Station implements IEntity {
         if ( stationID < 0 ) {
             new ErrorForm("Error with data keys");
             return false;
-        } else if ( postcode < 0 ) {
-            new ErrorForm("Postcode cannot be negative");
+        } else if ( postcode <= 0 ) {
+            new ErrorForm("Postcode must be greater than 0");
             return false;
         } else if ( radioFrequency < 0 ) {
             new ErrorForm("Cannot have negative frequency");
+            return false;
+        } else if ( streetAddress.isEmpty() ) {
+            new ErrorForm("Street Address cannot be empty");
+            return false;
+        } else if ( city.isEmpty() ) {
+            new ErrorForm("City cannot be empty");
             return false;
         }
 

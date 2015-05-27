@@ -108,6 +108,9 @@ public class ConnectionManager {
                 } else if ( se.getMessage().toLowerCase().contains("buildings_phone") ) {
                     new ErrorForm("Phone Number is used by another building");
                     se.printStackTrace();
+                } else if ( se.getMessage().toLowerCase().contains("pk_arrests") ) {
+                    new ErrorForm("Cannot have Officer arrest same person on same day");
+                    se.printStackTrace();
                 } else {
                     new ErrorForm(se.getMessage());
                     se.printStackTrace();

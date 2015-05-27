@@ -66,8 +66,8 @@ public class Arrest implements IEntity {
         if ( personID < 0 ) {
             new ErrorForm("Error with data keys");
             return false;
-        } else if ( postcode < 0 ) {
-            new ErrorForm("Postcode cannot be negative");
+        } else if ( postcode <= 0 ) {
+            new ErrorForm("Postcode must be greater than 0");
             return false;
         }
 

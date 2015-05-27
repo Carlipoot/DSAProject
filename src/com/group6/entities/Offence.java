@@ -11,7 +11,7 @@ public class Offence implements IEntity {
     public int personID = -1;
     public Date date;
     public int postcode;
-    public String description;
+    public String description = "";
 
     public Offence() {
 
@@ -66,8 +66,11 @@ public class Offence implements IEntity {
         if ( personID < 0 ) {
             new ErrorForm("Error with data keys");
             return false;
-        } else if ( postcode < 0 ) {
-            new ErrorForm("Postcode cannot be negative");
+        } else if ( postcode <= 0 ) {
+            new ErrorForm("Postcode must be greater than 0");
+            return false;
+        } else if ( description.equals("") ) {
+            new ErrorForm("Must contain a description");
             return false;
         }
 

@@ -5,9 +5,11 @@ import com.group6.manager.ConnectionManager;
 
 import javax.swing.*;
 import javax.swing.event.*;
+import javax.swing.text.NumberFormatter;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Date;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
@@ -258,7 +260,12 @@ public class DSAForm extends JFrame {
                         peopleSearchButton.doClick();
                     }
                 } catch (Exception ex) {
-
+                    if ( ex instanceof NumberFormatException )
+                        new ErrorForm("Postcode must not be empty");
+                    else if ( ex instanceof ParseException )
+                        new ErrorForm("Incorrect date format");
+                    else if ( ex instanceof IndexOutOfBoundsException )
+                        new ErrorForm("No person selected");
                 }
             }
         });
@@ -282,7 +289,10 @@ public class DSAForm extends JFrame {
                         peopleSearchButton.doClick();
                     }
                 } catch (Exception ex) {
-
+                    if ( ex instanceof NumberFormatException )
+                        new ErrorForm("Postcode must not be empty");
+                    else if ( ex instanceof ParseException )
+                        new ErrorForm("Incorrect date format");
                 }
             }
         });
@@ -327,8 +337,11 @@ public class DSAForm extends JFrame {
                             model.addElement(((Offence)entity).date.toString());
                         }
                     }
-                } catch (Exception ec) {
-
+                } catch (Exception ex) {
+                    if ( ex instanceof NumberFormatException )
+                        new ErrorForm("Postcode must not be empty");
+                    else if ( ex instanceof ParseException )
+                        new ErrorForm("Incorrect date format");
                 }
             }
         });
@@ -384,8 +397,11 @@ public class DSAForm extends JFrame {
                             model.addElement(((Arrest)entity).date.toString());
                         }
                     }
-                } catch (Exception ec) {
-
+                } catch (Exception ex) {
+                    if ( ex instanceof NumberFormatException )
+                        new ErrorForm("Postcode must not be empty");
+                    else if ( ex instanceof ParseException )
+                        new ErrorForm("Incorrect date format");
                 }
             }
         });
@@ -457,7 +473,18 @@ public class DSAForm extends JFrame {
                         stationSearchButton.doClick();
                     }
                 } catch (Exception ex) {
-
+                    if ( ex instanceof NumberFormatException ) {
+                        if (stationPhoneNumberField.getText().isEmpty())
+                            new ErrorForm("Phone number must not be empty");
+                        else if (stationPostcodeField.getText().isEmpty())
+                            new ErrorForm("Postcode must not be empty");
+                        else if (stationChiefIDField.getText().isEmpty())
+                            new ErrorForm("ChiefID must not be empty");
+                        else if (stationFrequencyField.getText().isEmpty())
+                            new ErrorForm("Frequency must not be empty");
+                    } else if ( ex instanceof IndexOutOfBoundsException ) {
+                        new ErrorForm("No station selected");
+                    }
                 }
             }
         });
@@ -484,8 +511,17 @@ public class DSAForm extends JFrame {
 
                         stationSearchButton.doClick();
                     }
-                } catch (Exception ec) {
-
+                } catch (Exception ex) {
+                    if ( ex instanceof NumberFormatException ) {
+                        if (stationPhoneNumberField.getText().isEmpty())
+                            new ErrorForm("Phone number must not be empty");
+                        else if (stationPostcodeField.getText().isEmpty())
+                            new ErrorForm("Postcode must not be empty");
+                        else if (stationChiefIDField.getText().isEmpty())
+                            new ErrorForm("ChiefID must not be empty");
+                        else if (stationFrequencyField.getText().isEmpty())
+                            new ErrorForm("Frequency must not be empty");
+                    }
                 }
             }
         });
@@ -555,7 +591,16 @@ public class DSAForm extends JFrame {
                         prisonSearchButton.doClick();
                     }
                 } catch (Exception ex) {
-
+                    if ( ex instanceof NumberFormatException ) {
+                        if (prisonPhoneNumberField.getText().isEmpty())
+                            new ErrorForm("Phone number must not be empty");
+                        else if (prisonPostcodeField.getText().isEmpty())
+                            new ErrorForm("Postcode must not be empty");
+                        else if (prisonCapacityField.getText().isEmpty())
+                            new ErrorForm("Capacity must not be empty");
+                    } else if ( ex instanceof IndexOutOfBoundsException ) {
+                        new ErrorForm("No prison selected");
+                    }
                 }
             }
         });
@@ -585,7 +630,16 @@ public class DSAForm extends JFrame {
                         prisonSearchButton.doClick();
                     }
                 } catch (Exception ex) {
-
+                    if ( ex instanceof NumberFormatException ) {
+                        if (prisonPhoneNumberField.getText().isEmpty())
+                            new ErrorForm("Phone number must not be empty");
+                        else if (prisonPostcodeField.getText().isEmpty())
+                            new ErrorForm("Postcode must not be empty");
+                        else if (prisonCapacityField.getText().isEmpty())
+                            new ErrorForm("Capacity must not be empty");
+                    } else if ( ex instanceof IndexOutOfBoundsException ) {
+                        new ErrorForm("No prison selected");
+                    }
                 }
             }
         });
