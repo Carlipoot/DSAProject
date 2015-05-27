@@ -25,23 +25,6 @@ public class Offence implements IEntity {
         this.description = description;
     }
 
-
-    public String select() {
-        if ( personID >= 0 )
-            return "SELECT * FROM Offences WHERE PersonID = " + personID + " ORDER BY \"Date\"";
-        else
-            return null;
-    }
-
-
-    public String selectAll() {
-        if ( personID >= 0 )
-            return "SELECT * FROM Offences WHERE PersonID = " + personID + " ORDER BY \"Date\"";
-        else
-            return null;
-    }
-
-
     @Override
     public Boolean select(Connection connection) throws SQLException {
         return null;
@@ -55,7 +38,7 @@ public class Offence implements IEntity {
         try {
             ArrayList<IEntity> entities = new ArrayList<IEntity>();
 
-            statement = connection.prepareStatement("SELECT * FROM Offences WHERE PersonID = ? ORDER BY \"Date\"");
+            statement = connection.prepareStatement("SELECT * FROM Offences WHERE PersonID = ? ORDER BY \"DATE\"");
             statement.setInt(1, personID);
 
             resultSet = statement.executeQuery();
@@ -71,14 +54,52 @@ public class Offence implements IEntity {
 
             return entities;
         } finally {
-            resultSet.close();
-            statement.close();
+            if ( resultSet != null )
+                resultSet.close();
+            if ( statement != null )
+                statement.close();
         }
     }
 
     @Override
     public Boolean insert(Connection connection) throws SQLException {
-        return null;
+        if ( personID < 0 ) {
+            new ErrorForm("Error with data keys");
+            return false;
+        } else if ( postcode < 0 ) {
+            new ErrorForm("Postcode cannot be negative");
+            return false;
+        }
+
+        PreparedStatement statement = null;
+        Boolean returnValue = false;
+
+        try {
+            connection.setAutoCommit(false);
+
+            statement = connection.prepareStatement("INSERT INTO Offences (PersonID, \"DATE\", Postcode, Description) " +
+                    "VALUES (?, ?, ?, ?)");
+            statement.setInt(1, personID);
+            statement.setDate(2, date);
+            statement.setInt(3, postcode);
+            statement.setString(4, description);
+
+            returnValue = statement.executeUpdate() > 0;
+
+            if ( !returnValue ) {
+                new ErrorForm("Could not update data");
+                connection.rollback();
+            } else {
+                connection.commit();
+            }
+
+            statement.close();
+
+            return returnValue;
+        } finally {
+            if ( statement != null )
+                statement.close();
+        }
     }
 
     @Override

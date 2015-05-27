@@ -226,6 +226,12 @@ public class DSAForm extends JFrame {
                         for ( IEntity entity : arrestsSearched ) {
                             model.addElement(((Arrest)entity).date.toString());
                         }
+
+                        arrestKFCComboBox.removeAllItems();
+                        ArrayList<IEntity> officers = ConnectionManager.getAll(new Officer());
+                        for ( IEntity entity : officers ) {
+                            arrestKFCComboBox.addItem((Officer)entity);
+                        }
                     }
                 }
             }
@@ -257,6 +263,30 @@ public class DSAForm extends JFrame {
             }
         });
 
+        peopleAddButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Person person = new Person();
+                try {
+                    person.name = peopleNameField.getText();
+                    person.birthDate = new Date(new SimpleDateFormat("yyyy-MM-dd").parse(peopleBirthDateField.getText()).getTime());
+                    person.streetAddress = peopleStreetField.getText();
+                    person.postcode = Integer.parseInt(peoplePostCodeField.getText());
+                    person.city = peopleCityField.getText();
+                    person.gender = peopleGenderField.getText();
+
+                    if ( ConnectionManager.insert(person) ) {
+                        currentPerson = person;
+
+                        peopleCurrentLabel.setText("Current Person: " + currentPerson.name);
+                        peopleSearchButton.doClick();
+                    }
+                } catch (Exception ex) {
+
+                }
+            }
+        });
+
         // Select from list to update fields for that offence
         offenceListList.addListSelectionListener(new ListSelectionListener() {
             @Override
@@ -271,6 +301,38 @@ public class DSAForm extends JFrame {
             }
         });
 
+        offenceAddButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Offence offence = new Offence();
+                try {
+                    offence.personID = currentPerson.personID;
+                    offence.date = new Date(new SimpleDateFormat("yyyy-MM-dd").parse(offenceDateField.getText()).getTime());
+                    offence.postcode = Integer.parseInt(offencePostcodeField.getText());
+                    offence.description = offenceDescriptionArea.getText();
+
+                    if ( ConnectionManager.insert(offence) ) {
+                        offenceDateField.setText("");
+                        offencePostcodeField.setText("");
+                        offenceDescriptionArea.setText("");
+
+                        ArrayList<IEntity> offenceEntities = ConnectionManager.getAll(offence);
+                        offencesSearched.clear();
+                        offencesSearched.addAll(offenceEntities);
+
+                        DefaultListModel<String> model = (DefaultListModel<String>)offenceListList.getModel();
+                        model.clear();
+
+                        for ( IEntity entity : offencesSearched ) {
+                            model.addElement(((Offence)entity).date.toString());
+                        }
+                    }
+                } catch (Exception ec) {
+
+                }
+            }
+        });
+
         // Select from list to update fields for that offence
         arrestsList.addListSelectionListener(new ListSelectionListener() {
             @Override
@@ -281,11 +343,52 @@ public class DSAForm extends JFrame {
                     arrestDateField.setText(arrest.date.toString());
                     arrestPostcodeField.setText("" + arrest.postcode);
                     arrestEvidenceArea.setText(arrest.evidence);
+
+                    ArrayList<IEntity> officers = ConnectionManager.getAll(new Officer());
+
+                    for ( IEntity entity : officers ) {
+                        if ( ((Officer)entity).officerID == arrest.officerID ) {
+                            int selected = officers.indexOf(entity);
+                            arrestKFCComboBox.setSelectedIndex(selected);
+                            break;
+                        }
+                    }
                 }
             }
         });
 
-        // TODO Code for update and insert
+        arrestAddButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Arrest arrest = new Arrest();
+                try {
+                    arrest.personID = currentPerson.personID;
+                    arrest.officerID = ((Officer)arrestKFCComboBox.getSelectedItem()).officerID;
+                    arrest.date = new Date(new SimpleDateFormat("yyyy-MM-dd").parse(arrestDateField.getText()).getTime());
+                    arrest.postcode = Integer.parseInt(arrestPostcodeField.getText());
+                    arrest.evidence = arrestEvidenceArea.getText();
+
+                    if ( ConnectionManager.insert(arrest) ) {
+                        arrestDateField.setText("");
+                        arrestPostcodeField.setText("");
+                        arrestEvidenceArea.setText("");
+
+                        ArrayList<IEntity> arrestEntities = ConnectionManager.getAll(arrest);
+                        arrestsSearched.clear();
+                        arrestsSearched.addAll(arrestEntities);
+
+                        DefaultListModel<String> model = (DefaultListModel<String>)arrestsList.getModel();
+                        model.clear();
+
+                        for ( IEntity entity : arrestsSearched ) {
+                            model.addElement(((Arrest)entity).date.toString());
+                        }
+                    }
+                } catch (Exception ec) {
+
+                }
+            }
+        });
 
 
         //==============================================================================================================
@@ -359,6 +462,34 @@ public class DSAForm extends JFrame {
             }
         });
 
+        stationAddButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Station station = new Station();
+                try {
+                    station.phoneNumber = Long.parseLong(stationPhoneNumberField.getText());
+                    station.streetAddress = stationStreetField.getText();
+                    station.postcode = Integer.parseInt(stationPostcodeField.getText());
+                    station.city = stationCityField.getText();
+                    station.chiefID = Integer.parseInt(stationChiefIDField.getText());
+                    station.radioFrequency = Float.parseFloat(stationFrequencyField.getText());
+
+                    if ( ConnectionManager.insert(station) ) {
+                        stationPhoneNumberField.setText("");
+                        stationStreetField.setText("");
+                        stationPostcodeField.setText("");
+                        stationCityField.setText("");
+                        stationChiefIDField.setText("");
+                        stationFrequencyField.setText("");
+
+                        stationSearchButton.doClick();
+                    }
+                } catch (Exception ec) {
+
+                }
+            }
+        });
+
         // List all prisons
         prisonSearchButton.addActionListener(new ActionListener() {
             @Override
@@ -413,6 +544,36 @@ public class DSAForm extends JFrame {
                     prison.closeHour = prisonCloseHourField.getText();
 
                     if ( ConnectionManager.update(prison) ) {
+                        prisonPhoneNumberField.setText("");
+                        prisonStreetField.setText("");
+                        prisonPostcodeField.setText("");
+                        prisonCityField.setText("");
+                        prisonCapacityField.setText("");
+                        prisonOpenHourField.setText("");
+                        prisonCloseHourField.setText("");
+
+                        prisonSearchButton.doClick();
+                    }
+                } catch (Exception ex) {
+
+                }
+            }
+        });
+
+        prisonAddButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Prison prison = new Prison();
+                try {
+                    prison.phoneNumber = Long.parseLong(prisonPhoneNumberField.getText());
+                    prison.streetAddress = prisonStreetField.getText();
+                    prison.postcode = Integer.parseInt(prisonPostcodeField.getText());
+                    prison.city = prisonCityField.getText();
+                    prison.capacity = Integer.parseInt(prisonCapacityField.getText());
+                    prison.openHour = prisonOpenHourField.getText();
+                    prison.closeHour = prisonCloseHourField.getText();
+
+                    if ( ConnectionManager.insert(prison) ) {
                         prisonPhoneNumberField.setText("");
                         prisonStreetField.setText("");
                         prisonPostcodeField.setText("");
@@ -552,5 +713,6 @@ public class DSAForm extends JFrame {
     private JLabel prisonOpenHourLabel;
     private JButton prisonSearchButton;
     private JButton stationSearchButton;
+    private JComboBox arrestKFCComboBox;
 
 }

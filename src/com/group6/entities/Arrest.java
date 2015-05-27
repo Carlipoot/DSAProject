@@ -38,7 +38,7 @@ public class Arrest implements IEntity {
         try {
             ArrayList<IEntity> entities = new ArrayList<IEntity>();
 
-            statement = connection.prepareStatement("SELECT * FROM Arrests WHERE PersonID = ? ORDER BY \"Date\"");
+            statement = connection.prepareStatement("SELECT * FROM Arrests WHERE PersonID = ? ORDER BY \"DATE\"");
             statement.setInt(1, personID);
 
             resultSet = statement.executeQuery();
@@ -54,27 +54,52 @@ public class Arrest implements IEntity {
 
             return entities;
         } finally {
-            resultSet.close();
-            statement.close();
+            if ( resultSet != null )
+                resultSet.close();
+            if ( statement != null )
+                statement.close();
         }
     }
 
     @Override
     public Boolean insert(Connection connection) throws SQLException {
+        if ( personID < 0 ) {
+            new ErrorForm("Error with data keys");
+            return false;
+        } else if ( postcode < 0 ) {
+            new ErrorForm("Postcode cannot be negative");
+            return false;
+        }
+
         PreparedStatement statement = null;
         Boolean returnValue = false;
 
         try {
-            statement = connection.prepareStatement("INSERT INTO Arrests VALUES (?, ?, ?, ?, ?)");
-            statement.setInt(1, personID);
+            connection.setAutoCommit(false);
 
-            returnValue = statement.execute();
+            statement = connection.prepareStatement("INSERT INTO Arrests (OfficerID, PersonID, \"DATE\", Postcode, Evidence) " +
+                    "VALUES (?, ?, ?, ?, ?)");
+            statement.setInt(1, officerID);
+            statement.setInt(2, personID);
+            statement.setDate(3, date);
+            statement.setInt(4, postcode);
+            statement.setString(5, evidence);
+
+            returnValue = statement.executeUpdate() > 0;
+
+            if ( !returnValue ) {
+                new ErrorForm("Could not update data");
+                connection.rollback();
+            } else {
+                connection.commit();
+            }
 
             statement.close();
 
             return returnValue;
         } finally {
-            statement.close();
+            if ( statement != null )
+                statement.close();
         }
     }
 

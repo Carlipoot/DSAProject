@@ -61,23 +61,80 @@ public class Prison implements IEntity {
 
             return entities;
         } finally {
-            resultSet.close();
-            statement.close();
+            if ( resultSet != null )
+                resultSet.close();
+            if ( statement != null )
+                statement.close();
         }
     }
 
     @Override
     public Boolean insert(Connection connection) throws SQLException {
-        return null;
-    }
-
-    @Override
-    public Boolean update(Connection connection) throws SQLException {
         if ( postcode < 0 ) {
             new ErrorForm("Postcode cannot be negative");
             return false;
         } else if ( capacity <= 0 ) {
-            new ErrorForm("Cannot have negative capacity");
+            new ErrorForm("Must have frequency greater than 0");
+            return false;
+        }
+
+        PreparedStatement statement = null;
+        Boolean returnValue = false;
+
+        try {
+            connection.setAutoCommit(false);
+
+            statement = connection.prepareStatement("INSERT INTO Buildings (PhoneNumber, StreetAddress, Postcode, City) " +
+                    "VALUES (?, ?, ?, ?)", new String[] {"BuildingID"});
+            statement.setLong(1, phoneNumber);
+            statement.setString(2, streetAddress);
+            statement.setInt(3, postcode);
+            statement.setString(4, city);
+
+            returnValue = statement.executeUpdate() > 0;
+
+            ResultSet resultSet = statement.getGeneratedKeys();
+            resultSet.next();
+            int buildingID = resultSet.getInt(1);
+            resultSet.close();
+
+            statement.close();
+
+            statement = connection.prepareStatement("INSERT INTO Prisons (PrisonID, Capacity, OpenHours, CloseHours) " +
+                    "VALUES (?, ?, ?, ?)");
+            statement.setInt(1, buildingID);
+            statement.setInt(2, capacity);
+            statement.setString(3, openHour);
+            statement.setString(4, closeHour);
+
+            returnValue = returnValue && statement.executeUpdate() > 0;
+
+            if ( !returnValue ) {
+                new ErrorForm("Could not update data");
+                connection.rollback();
+            } else {
+                connection.commit();
+            }
+
+            statement.close();
+
+            return returnValue;
+        } finally {
+            if ( statement != null )
+                statement.close();
+        }
+    }
+
+    @Override
+    public Boolean update(Connection connection) throws SQLException {
+        if ( prisonID < 0 ) {
+            new ErrorForm("Error with data keys");
+            return false;
+        } else if ( postcode < 0 ) {
+            new ErrorForm("Postcode cannot be negative");
+            return false;
+        } else if ( capacity <= 0 ) {
+            new ErrorForm("Must have frequency greater than 0");
             return false;
         }
 
@@ -117,7 +174,8 @@ public class Prison implements IEntity {
 
             return returnValue;
         } finally {
-            statement.close();
+            if ( statement != null )
+                statement.close();
         }
     }
 

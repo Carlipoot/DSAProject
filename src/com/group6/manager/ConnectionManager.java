@@ -88,26 +88,34 @@ public class ConnectionManager {
         return returnValue;
     }
 
-    public static int insert(IEntity entity) {
+    public static Boolean insert(IEntity entity) {
         Connection connection = null;
-        int found = 0;
+        Boolean returnValue =  false;
 
         try{
             Class.forName(JDBC_DRIVER);
 
             connection = DriverManager.getConnection(DB_URL, USER, PASS);
 
-            found = entity.insert(connection) ? 1 : 0;
+            returnValue = entity.insert(connection);
 
             connection.close();
         } catch(SQLException se) {
-            new ErrorForm(se.getMessage());
-            se.printStackTrace();
-            found = -1;
+            if ( se instanceof SQLIntegrityConstraintViolationException ) {
+                if ( se.getMessage().toLowerCase().contains("chief") ) {
+                    new ErrorForm("ChiefID does not exist");
+                    se.printStackTrace();
+                } else if ( se.getMessage().toLowerCase().contains("buildings_phone") ) {
+                    new ErrorForm("Phone Number is used by another building");
+                    se.printStackTrace();
+                } else {
+                    new ErrorForm(se.getMessage());
+                    se.printStackTrace();
+                }
+            }
         } catch(Exception e) {
             new ErrorForm("Could not find JDBC driver:" + JDBC_DRIVER);
             e.printStackTrace();
-            found = -1;
         } finally {
             try {
                 if ( connection != null )
@@ -115,16 +123,15 @@ public class ConnectionManager {
             } catch (SQLException se) {
                 new ErrorForm(se.getMessage());
                 se.printStackTrace();
-                found = -1;
             }
         }
 
-        return found;
+        return returnValue;
     }
 
     public static ArrayList<IEntity> getAll(IEntity entity) {
         Connection connection = null;
-        ArrayList<IEntity> entities = null;
+        ArrayList<IEntity> entities = new ArrayList<IEntity>();
 
         try{
             Class.forName(JDBC_DRIVER);
